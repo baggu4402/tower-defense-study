@@ -68,6 +68,7 @@ public class BuildMenuUI : MonoBehaviour
             menuPanel.SetActive(true);
 
             // 화면 중앙에 고정으로 띄우기
+            // 나중에는 노드위에 표시할거임 지금은 테스트용
             RectTransform rect = menuPanel.GetComponent<RectTransform>();
             rect.anchoredPosition = Vector2.zero;
         }
@@ -133,3 +134,4 @@ public class BuildMenuUI : MonoBehaviour
     }
 
 }
+
