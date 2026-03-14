@@ -13,7 +13,12 @@ public class ArrowProjectile : MonoBehaviour
     private Vector2 targetPoint;
     private float timer = 0f;
     private bool isFlying = false;
+    /*
+    Setup()
 
+    화살이 생성될 때 호출
+    목표 Enemy와 데미지 설정
+    */
     public void Setup(Enemy newTarget, int newDamage)
     {
         target = newTarget;
@@ -30,7 +35,11 @@ public class ArrowProjectile : MonoBehaviour
         timer = 0f;
         isFlying = true;
     }
+    /*
+    Update()
 
+    포물선 이동 계산
+    */
     private void Update()
     {
         if (!isFlying)
@@ -76,7 +85,11 @@ public class ArrowProjectile : MonoBehaviour
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
+    /*
+    HitTarget()
 
+    목표 Enemy에게 데미지 적용
+    */
     private void HitTarget()
     {
         if (target != null)
