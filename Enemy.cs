@@ -10,6 +10,22 @@ public class Enemy : MonoBehaviour
     public int maxHP = 5;
     private int currentHP;
 
+    [Header("Reward / Penalty")]
+    public int rewardGold = 10;
+    public int damageToLife = 1;
+
+    [Header("Combat")]
+    public int damage = 1;
+    public float attackRate = 1f;
+    public float attackHitDelay = 0.2f;
+    public float attackLockTime = 0.5f;
+    private float attackTimer = 0f;
+    private bool isAttacking = false;
+
+    [Header("Animation")]
+    public Animator animator;
+    public Transform visualRoot;
+
     [Header("Hit Effect")]
     public float hitFlashDuration = 0.1f;
 
@@ -20,7 +36,6 @@ public class Enemy : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Color originalColor;
 
-    // 병사에게 막혔는지
     private bool isBlocked = false;
     private SoldierUnit currentBlocker;
 
@@ -52,8 +67,18 @@ public class Enemy : MonoBehaviour
         if (path == null || isDead)
             return;
 
-        if (!isBlocked)
+        attackTimer += Time.deltaTime;
+
+        if (isBlocked)
         {
+            SetMovingAnimation(false);
+            FaceCurrentTarget();
+            AttackSoldier();
+        }
+        else
+        {
+            isAttacking = false;
+            SetMovingAnimation(true);
             MoveAlongPath();
         }
     }
@@ -67,6 +92,8 @@ public class Enemy : MonoBehaviour
         }
 
         Transform targetWaypoint = path.GetWaypoint(currentWaypointIndex);
+
+        FaceDirection(targetWaypoint.position);
 
         transform.position = Vector2.MoveTowards(
             transform.position,
@@ -82,13 +109,51 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int damage)
+    private void AttackSoldier()
+    {
+        if (currentBlocker == null || currentBlocker.IsDead())
+        {
+            isBlocked = false;
+            currentBlocker = null;
+            isAttacking = false;
+            attackTimer = 0f;
+            return;
+        }
+
+        if (isAttacking)
+            return;
+
+        if (attackTimer >= 1f / attackRate)
+        {
+            StartCoroutine(AttackRoutine());
+            attackTimer = 0f;
+        }
+    }
+
+    private IEnumerator AttackRoutine()
+    {
+        isAttacking = true;
+        PlayAttackAnimation();
+
+        yield return new WaitForSeconds(attackHitDelay);
+
+        if (!isDead && currentBlocker != null && !currentBlocker.IsDead())
+        {
+            currentBlocker.TakeDamage(damage);
+        }
+
+        yield return new WaitForSeconds(Mathf.Max(0f, attackLockTime - attackHitDelay));
+
+        isAttacking = false;
+    }
+
+    public void TakeDamage(int damageAmount)
     {
         if (isDead)
             return;
 
-        currentHP -= damage;
-        Debug.Log($"{gameObject.name} 이(가) {damage} 데미지를 받음. 현재 HP: {currentHP}");
+        currentHP -= damageAmount;
+        Debug.Log($"{gameObject.name} 이(가) {damageAmount} 데미지를 받음. 현재 HP: {currentHP}");
 
         if (spriteRenderer != null)
         {
@@ -110,12 +175,21 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
-        isDead = true;
+        if (isDead)
+            return;
 
-        // 죽을 때 막힘 해제
+        isDead = true;
+        isAttacking = false;
+        SetMovingAnimation(false);
+
         if (currentBlocker != null)
         {
             currentBlocker.ReleaseEnemy();
+        }
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.AddGold(rewardGold);
         }
 
         Destroy(gameObject);
@@ -123,6 +197,11 @@ public class Enemy : MonoBehaviour
 
     private void ReachGoal()
     {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.LoseLife(damageToLife);
+        }
+
         Destroy(gameObject);
     }
 
@@ -133,6 +212,7 @@ public class Enemy : MonoBehaviour
 
         isBlocked = true;
         currentBlocker = soldier;
+        attackTimer = 0f;
     }
 
     public void ReleaseBlock(SoldierUnit soldier)
@@ -141,7 +221,49 @@ public class Enemy : MonoBehaviour
         {
             isBlocked = false;
             currentBlocker = null;
+            isAttacking = false;
+            attackTimer = 0f;
+            StopAllCoroutines();
         }
+    }
+
+    private void SetMovingAnimation(bool isMoving)
+    {
+        if (animator != null)
+        {
+            animator.SetBool("IsMoving", isMoving);
+        }
+    }
+
+    private void PlayAttackAnimation()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("Attack");
+        }
+    }
+
+    private void FaceCurrentTarget()
+    {
+        if (currentBlocker == null)
+            return;
+
+        FaceDirection(currentBlocker.transform.position);
+    }
+
+    private void FaceDirection(Vector2 targetPos)
+    {
+        if (visualRoot == null)
+            return;
+
+        Vector3 scale = visualRoot.localScale;
+
+        if (targetPos.x < transform.position.x)
+            scale.x = -Mathf.Abs(scale.x);
+        else
+            scale.x = Mathf.Abs(scale.x);
+
+        visualRoot.localScale = scale;
     }
 
     public bool IsDead()

@@ -6,6 +6,11 @@ public class SoldierUnit : MonoBehaviour
     public float moveSpeed = 2f;
     public float stopDistance = 0.05f;
 
+    [Header("HP")]
+    public int maxHP = 5;
+    private int currentHP;
+    private bool isDead = false;
+
     [Header("Combat")]
     public float detectRange = 1.2f;
     public float attackRange = 0.25f;
@@ -22,10 +27,31 @@ public class SoldierUnit : MonoBehaviour
     private Enemy currentEnemy;
     private float attackTimer = 0f;
 
+    private BarracksBuilding ownerBarracks;
+    private int formationIndex = -1;
+
     public void Setup(Vector2 startTargetPosition)
     {
         targetPosition = startTargetPosition;
+        currentHP = maxHP;
+        isDead = false;
         isInitialized = true;
+    }
+
+    public void SetOwner(BarracksBuilding barracks, int index)
+    {
+        ownerBarracks = barracks;
+        formationIndex = index;
+    }
+
+    public int GetFormationIndex()
+    {
+        return formationIndex;
+    }
+
+    public bool IsDead()
+    {
+        return isDead;
     }
 
     public void SetTargetPosition(Vector2 newTargetPosition)
@@ -41,7 +67,7 @@ public class SoldierUnit : MonoBehaviour
 
     private void Update()
     {
-        if (!isInitialized)
+        if (!isInitialized || isDead)
             return;
 
         attackTimer += Time.deltaTime;
@@ -79,7 +105,6 @@ public class SoldierUnit : MonoBehaviour
         }
 
         FaceDirection(targetPosition);
-
         SetMovingAnimation(true);
 
         transform.position = Vector2.MoveTowards(
@@ -151,6 +176,39 @@ public class SoldierUnit : MonoBehaviour
         }
     }
 
+    public void TakeDamage(int dmg)
+    {
+        if (isDead)
+            return;
+
+        currentHP -= dmg;
+        Debug.Log($"{gameObject.name} 이(가) {dmg} 데미지를 받음. 현재 HP: {currentHP}");
+
+        if (currentHP <= 0)
+            Die();
+    }
+
+    private void Die()
+    {
+        if (isDead)
+            return;
+
+        isDead = true;
+
+        if (currentEnemy != null)
+        {
+            currentEnemy.ReleaseBlock(this);
+            currentEnemy = null;
+        }
+
+        SetMovingAnimation(false);
+
+        if (ownerBarracks != null)
+            ownerBarracks.OnSoldierDead(this, formationIndex);
+
+        Destroy(gameObject);
+    }
+
     private void FaceDirection(Vector2 targetPos)
     {
         if (visualRoot == null)
@@ -169,17 +227,13 @@ public class SoldierUnit : MonoBehaviour
     private void SetMovingAnimation(bool isMoving)
     {
         if (animator != null)
-        {
             animator.SetBool("IsMoving", isMoving);
-        }
     }
 
     private void PlayAttackAnimation()
     {
         if (animator != null)
-        {
             animator.SetTrigger("Attack");
-        }
     }
 
     public void ReleaseEnemy()
