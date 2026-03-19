@@ -1,8 +1,4 @@
 # Unity Tower Defense Study
-
-Unity로 타워 디펜스 게임을 만들면서 시스템을 공부하는 저장소입니다.
-각 시스템을 직접 구현하고 코드에 주석을 추가하여 구조와 동작 원리를 학습합니다.
-
 ---
 
 ## Implemented Systems
