@@ -19,13 +19,16 @@ Unity로 타워 디펜스 게임을 만들면서 시스템을 공부하는 저�
 * Hierarchy child를 waypoint로 자동 등록
 * `Gizmos`를 이용한 경로 시각화
 
-### 3. Enemy Movement
+### 3. Enemy Movement & Combat
 
 * `Vector2.MoveTowards` 기반 이동
 * `Time.deltaTime`을 이용한 프레임 독립 이동
 * Enemy HP 시스템
 * Damage / Death 처리
-* Goal 도달 처리
+* Goal 도달 시 생명 감소
+* Soldier와 근접 전투 시스템
+* 공격 속도 (`attackRate`) 기반 공격
+* 공격 애니메이션 및 타이밍 처리
 
 ### 4. Tower Build System
 
@@ -34,6 +37,7 @@ Unity로 타워 디펜스 게임을 만들면서 시스템을 공부하는 저�
 * 클릭 → 메뉴 표시 → 타워 선택 → 설치 흐름
 * `Instantiate()`로 타워 생성
 * 동일 위치 중복 설치 방지 (`currentTower`)
+* 골드 시스템 연동 (`GameManager`)
 
 ### 5. Archer Tower System
 
@@ -62,7 +66,27 @@ Unity로 타워 디펜스 게임을 만들면서 시스템을 공부하는 저�
 * Rally Point(집결지) 시스템
 * 병사 대형(Formation) 위치 관리
 * 병사 이동 (`MoveTowards`)
-* 우클릭으로 집결지 위치 변경
+* 병사 사망 시 일정 시간 후 리스폰
+* Formation 슬롯 기반 병사 관리
+
+### 9. Soldier Combat System
+
+* `SoldierUnit`
+* Enemy 탐지 (`detectRange`)
+* 근접 전투 (`attackRange`)
+* Enemy 블로킹 시스템 (`SetBlocked`)
+* Enemy와 1:1 전투 구조
+* 공격 속도 기반 데미지 처리
+* 병사 사망 → Barracks에 알림
+
+### 10. Game Management System
+
+* `GameManager`
+* 골드 관리 (획득 / 소비)
+* 타워 건설 비용 처리
+* Enemy 처치 시 골드 보상
+* 생명 시스템 (Goal 도달 시 감소)
+* Game Over 처리
 
 ---
 
@@ -74,10 +98,15 @@ Unity로 타워 디펜스 게임을 만들면서 시스템을 공부하는 저�
 * MonoBehaviour lifecycle (`Awake`, `Start`, `Update`)
 * Transform & Waypoint 시스템
 * Vector 이동 (`MoveTowards`, `Lerp`)
-* Coroutine (`AttackRoutine`)
+* Coroutine (`AttackRoutine`, Respawn)
 * Projectile 시스템
 * Rally Point 시스템
 * Formation offsets (유닛 대형 시스템)
+* Singleton 패턴 (`GameManager`, `RallyController`)
+* 간단한 AI 구조 (Find → Move → Attack)
+* Object 간 상호작용 (Enemy ↔ Soldier ↔ Barracks)
 * UI 패널 제어 (`SetActive`)
 * Object Reference 관리
 * GameObject 생성 및 상태 관리
+
+---
