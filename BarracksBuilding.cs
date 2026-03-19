@@ -1,7 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+/*
+포함된 시스템
+- Barracks (병영)
+- Soldier (병사)
+- Enemy (적 AI + 전투)
+- Build UI
+- GameManager (자원 시스템)
 
+====================================================
+*/
 public class BarracksBuilding : MonoBehaviour
 {
     [Header("Soldier Spawn")]
