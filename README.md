@@ -1,4 +1,5 @@
 # Unity Tower Defense Study
+
 ---
 
 ## Implemented Systems
@@ -7,7 +8,7 @@
 
 * `EnemySpawner`
 * `Instantiate()`를 이용한 Enemy 생성
-* Enemy 생성 후 Path 전달
+* Wave 시스템과 연동된 Spawn 구조
 
 ### 2. Path System
 
@@ -23,8 +24,7 @@
 * Damage / Death 처리
 * Goal 도달 시 생명 감소
 * Soldier와 근접 전투 시스템
-* 공격 속도 (`attackRate`) 기반 공격
-* 공격 애니메이션 및 타이밍 처리
+* 공격 속도 기반 전투 로직
 
 ### 4. Tower Build System
 
@@ -32,13 +32,13 @@
 * `BuildMenuUI`를 통한 타워 선택 UI
 * 클릭 → 메뉴 표시 → 타워 선택 → 설치 흐름
 * `Instantiate()`로 타워 생성
-* 동일 위치 중복 설치 방지 (`currentTower`)
 * 골드 시스템 연동 (`GameManager`)
+* 중복 설치 방지
 
 ### 5. Archer Tower System
 
-* `ArcherTowerBuilding`을 통한 궁수 유닛 생성
-* 타워가 궁수 유닛을 보유하는 구조
+* `ArcherTowerBuilding`
+* 궁수 유닛 생성 구조
 
 ### 6. Targeting & Attack System
 
@@ -46,43 +46,58 @@
 * 사거리 내 Enemy 탐색
 * 가장 가까운 Enemy 선택
 * 공격 쿨타임 관리
-* 공격 애니메이션 실행
+* 공격 애니메이션
 
 ### 7. Projectile System
 
 * `ArrowProjectile`
-* 화살 포물선 이동
-* `Vector2.Lerp` 기반 이동 계산
-* 목표 Enemy에게 데미지 적용
+* 포물선 이동
+* `Vector2.Lerp` 기반 궤적 계산
+* Enemy 데미지 적용
 
 ### 8. Barracks System
 
 * `BarracksBuilding`
-* 병사(Soldier) 유닛 생성
-* Rally Point(집결지) 시스템
-* 병사 대형(Formation) 위치 관리
-* 병사 이동 (`MoveTowards`)
-* 병사 사망 시 일정 시간 후 리스폰
-* Formation 슬롯 기반 병사 관리
+* Soldier 유닛 생성
+* Rally Point 시스템
+* Formation 기반 배치
+* 병사 사망 시 리스폰
 
 ### 9. Soldier Combat System
 
 * `SoldierUnit`
-* Enemy 탐지 (`detectRange`)
-* 근접 전투 (`attackRange`)
-* Enemy 블로킹 시스템 (`SetBlocked`)
+* Enemy 탐지 및 블로킹
+* 근접 전투 시스템
 * Enemy와 1:1 전투 구조
-* 공격 속도 기반 데미지 처리
-* 병사 사망 → Barracks에 알림
 
-### 10. Game Management System
+### 10. Wave System ⭐
+
+* `WaveManager`
+
+* 웨이브 기반 Enemy 생성
+
+* 웨이브 증가 시 적 수 증가
+
+* Spawn 간격 제어
+
+* 다음 웨이브 자동 진행
+
+* 모든 적 제거 시 다음 웨이브 시작
+
+* `WaveEnemyListener`
+
+* Enemy 사망 / 도착 감지
+
+* 현재 살아있는 적 수 추적
+
+### 11. Game Management System
 
 * `GameManager`
-* 골드 관리 (획득 / 소비)
-* 타워 건설 비용 처리
-* Enemy 처치 시 골드 보상
-* 생명 시스템 (Goal 도달 시 감소)
+* 골드 시스템 (획득 / 소비)
+* 생명 시스템
+* UI 업데이트 (Gold / Life / Wave)
 * Game Over 처리
+* 게임 상태 관리
 
 ---
 
@@ -94,15 +109,13 @@
 * MonoBehaviour lifecycle (`Awake`, `Start`, `Update`)
 * Transform & Waypoint 시스템
 * Vector 이동 (`MoveTowards`, `Lerp`)
-* Coroutine (`AttackRoutine`, Respawn)
+* Coroutine (`AttackRoutine`, Wave Spawn)
 * Projectile 시스템
+* Wave 시스템 (게임 루프 핵심)
 * Rally Point 시스템
-* Formation offsets (유닛 대형 시스템)
+* Formation offsets (유닛 배치)
 * Singleton 패턴 (`GameManager`, `RallyController`)
 * 간단한 AI 구조 (Find → Move → Attack)
-* Object 간 상호작용 (Enemy ↔ Soldier ↔ Barracks)
-* UI 패널 제어 (`SetActive`)
-* Object Reference 관리
-* GameObject 생성 및 상태 관리
-
----
+* Object 간 상호작용 (Enemy ↔ Soldier ↔ Tower)
+* UI 시스템 (`TextMeshPro`, Panel 제어)
+* Game State 관리 (Game Over)
