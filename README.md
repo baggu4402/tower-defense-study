@@ -70,7 +70,7 @@
 * 근접 전투 시스템
 * Enemy와 1:1 전투 구조
 
-### 10. Wave System ⭐
+### 10. Wave System 
 
 * `WaveManager`
 
