@@ -3,7 +3,7 @@ using UnityEngine;
 public class WaveEnemyListener : MonoBehaviour
 {
     private WaveManager waveManager;
-    private bool notified = false;
+    private bool hasNotified = false;
 
     public void Setup(WaveManager manager)
     {
@@ -12,14 +12,14 @@ public class WaveEnemyListener : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (notified)
+        if (hasNotified)
             return;
 
-        notified = true;
+        hasNotified = true;
 
         if (waveManager != null)
         {
-            waveManager.NotifyEnemyDeadOrExited();
+            waveManager.NotifyEnemyRemoved();
         }
     }
 }
