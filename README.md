@@ -7,55 +7,62 @@
 ### 1. Enemy Spawn
 
 * `EnemySpawner`
-* `Instantiate()`를 이용한 Enemy 생성
+* `Instantiate()` 기반 Enemy 생성
 * Wave 시스템과 연동된 Spawn 구조
 
 ### 2. Path System
 
 * Waypoint 기반 이동 경로
-* Hierarchy child를 waypoint로 자동 등록
-* `Gizmos`를 이용한 경로 시각화
+* Hierarchy child 자동 waypoint 등록
+* `Gizmos` 경로 시각화
 
 ### 3. Enemy Movement & Combat
 
-* `Vector2.MoveTowards` 기반 이동
-* `Time.deltaTime`을 이용한 프레임 독립 이동
-* Enemy HP 시스템
-* Damage / Death 처리
+* `Vector2.MoveTowards` 이동
+* 프레임 독립 이동 (`Time.deltaTime`)
+* Enemy HP / 사망 처리
 * Goal 도달 시 생명 감소
-* Soldier와 근접 전투 시스템
-* 공격 속도 기반 전투 로직
+* Soldier와 근접 전투
+* 공격 애니메이션 및 타이밍 처리
 
 ### 4. Tower Build System
 
-* `TowerNode`를 이용한 설치 위치 관리
-* `BuildMenuUI`를 통한 타워 선택 UI
-* 클릭 → 메뉴 표시 → 타워 선택 → 설치 흐름
-* `Instantiate()`로 타워 생성
+* `TowerNode` 설치 위치 관리
+* `BuildMenuUI` UI 기반 선택
+* 클릭 → 선택 → 설치 흐름
 * 골드 시스템 연동 (`GameManager`)
 * 중복 설치 방지
 
 ### 5. Archer Tower System
 
 * `ArcherTowerBuilding`
-* 궁수 유닛 생성 구조
+* 궁수 유닛 생성
+* 단일 타겟 공격 구조
 
-### 6. Targeting & Attack System
+### 6. Mage Tower System 
 
-* `ArcherUnit`
-* 사거리 내 Enemy 탐색
+* `MageTowerBuilding`
+* `MageUnit`
+* 범위 공격 (Splash Damage)
+* `Physics2D.OverlapCircleAll` 기반 탐지
+* 공격 이펙트 (`MageImpactEffect`)
+* 포인트 타격 + 주변 적 데미지
+
+### 7. Targeting & Attack System
+
+* 사거리 기반 Enemy 탐색
 * 가장 가까운 Enemy 선택
-* 공격 쿨타임 관리
-* 공격 애니메이션
+* 공격 쿨타임 제어
+* 코루틴 기반 공격 타이밍
 
-### 7. Projectile System
+### 8. Projectile & Impact System
 
-* `ArrowProjectile`
-* 포물선 이동
-* `Vector2.Lerp` 기반 궤적 계산
-* Enemy 데미지 적용
+* `ArrowProjectile` (포물선 이동)
+* `Vector2.Lerp` 기반 궤적
+* Impact Effect 시스템
+* 자동 삭제 이펙트 처리
 
-### 8. Barracks System
+### 9. Barracks System
 
 * `BarracksBuilding`
 * Soldier 유닛 생성
@@ -63,41 +70,45 @@
 * Formation 기반 배치
 * 병사 사망 시 리스폰
 
-### 9. Soldier Combat System
+### 10. Soldier Combat System
 
 * `SoldierUnit`
 * Enemy 탐지 및 블로킹
 * 근접 전투 시스템
 * Enemy와 1:1 전투 구조
 
-### 10. Wave System 
+### 11. Wave System 
 
 * `WaveManager`
 
-* 웨이브 기반 Enemy 생성
+* 버튼 기반 웨이브 시작
 
-* 웨이브 증가 시 적 수 증가
+* 웨이브별 적 수 증가
 
 * Spawn 간격 제어
 
-* 다음 웨이브 자동 진행
-
-* 모든 적 제거 시 다음 웨이브 시작
+* 웨이브 종료 후 대기 시간
 
 * `WaveEnemyListener`
 
-* Enemy 사망 / 도착 감지
+* Enemy 제거 감지
 
-* 현재 살아있는 적 수 추적
+* 살아있는 적 수 추적
 
-### 11. Game Management System
+### 12. Game Management System
 
 * `GameManager`
 * 골드 시스템 (획득 / 소비)
 * 생명 시스템
-* UI 업데이트 (Gold / Life / Wave)
 * Game Over 처리
-* 게임 상태 관리
+* UI 연동 (Gold / Life / Wave)
+
+### 13. UI System
+
+* `TextMeshPro` 기반 UI
+* Wave 버튼 인터랙션
+* `UIButtonPulse` 애니메이션 효과
+* Game Over UI
 
 ---
 
@@ -109,13 +120,13 @@
 * MonoBehaviour lifecycle (`Awake`, `Start`, `Update`)
 * Transform & Waypoint 시스템
 * Vector 이동 (`MoveTowards`, `Lerp`)
-* Coroutine (`AttackRoutine`, Wave Spawn)
-* Projectile 시스템
+* Coroutine (공격, 웨이브, 리스폰)
+* Projectile & Splash Damage 시스템
+* Physics2D (`OverlapCircle`)
 * Wave 시스템 (게임 루프 핵심)
-* Rally Point 시스템
-* Formation offsets (유닛 배치)
-* Singleton 패턴 (`GameManager`, `RallyController`)
+* Rally Point & Formation 시스템
+* Singleton 패턴 (`GameManager`, Controller)
 * 간단한 AI 구조 (Find → Move → Attack)
 * Object 간 상호작용 (Enemy ↔ Soldier ↔ Tower)
-* UI 시스템 (`TextMeshPro`, Panel 제어)
+* UI 시스템 (`TextMeshPro`, Button, Animation)
 * Game State 관리 (Game Over)
