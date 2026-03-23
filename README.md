@@ -23,7 +23,7 @@
 * Enemy HP / 사망 처리
 * Goal 도달 시 생명 감소
 * Soldier와 근접 전투
-* 공격 애니메이션 및 타이밍 처리
+* 블로킹 기반 전투 시스템
 
 ### 4. Tower Build System
 
@@ -36,8 +36,8 @@
 ### 5. Archer Tower System
 
 * `ArcherTowerBuilding`
-* 궁수 유닛 생성
-* 단일 타겟 공격 구조
+* 단일 타겟 공격
+* 화살 Projectile 시스템
 
 ### 6. Mage Tower System 
 
@@ -45,22 +45,20 @@
 * `MageUnit`
 * 범위 공격 (Splash Damage)
 * `Physics2D.OverlapCircleAll` 기반 탐지
-* 공격 이펙트 (`MageImpactEffect`)
-* 포인트 타격 + 주변 적 데미지
+* Impact Effect 시스템
 
 ### 7. Targeting & Attack System
 
 * 사거리 기반 Enemy 탐색
 * 가장 가까운 Enemy 선택
 * 공격 쿨타임 제어
-* 코루틴 기반 공격 타이밍
+* Coroutine 기반 공격 타이밍
 
 ### 8. Projectile & Impact System
 
-* `ArrowProjectile` (포물선 이동)
-* `Vector2.Lerp` 기반 궤적
-* Impact Effect 시스템
-* 자동 삭제 이펙트 처리
+* `ArrowProjectile`
+* 포물선 이동 (`Vector2.Lerp`)
+* Impact Effect 생성 및 자동 제거
 
 ### 9. Barracks System
 
@@ -70,14 +68,26 @@
 * Formation 기반 배치
 * 병사 사망 시 리스폰
 
-### 10. Soldier Combat System
+### 10. Soldier Combat System 
 
 * `SoldierUnit`
-* Enemy 탐지 및 블로킹
-* 근접 전투 시스템
-* Enemy와 1:1 전투 구조
+* HP 시스템
+* Enemy 탐지 (`detectRange`)
+* 근접 전투 (`attackRange`)
+* Enemy 블로킹 시스템 (`SetBlocked / ReleaseBlock`)
+* 1:1 전투 구조
+* 공격 속도 기반 전투 (`attackRate`)
+* 애니메이션 연동 (이동 / 공격)
+* 병사 사망 → Barracks 리스폰 시스템
 
-### 11. Wave System 
+### 11. Spearman System 
+
+* `SpearmanBuilding`
+* Barracks 확장형 타워
+* 동일 구조 기반 유닛 변형
+* 타워 다양화 구조 설계
+
+### 12. Wave System 
 
 * `WaveManager`
 
@@ -87,7 +97,7 @@
 
 * Spawn 간격 제어
 
-* 웨이브 종료 후 대기 시간
+* 자동 다음 웨이브 준비
 
 * `WaveEnemyListener`
 
@@ -95,7 +105,7 @@
 
 * 살아있는 적 수 추적
 
-### 12. Game Management System
+### 13. Game Management System
 
 * `GameManager`
 * 골드 시스템 (획득 / 소비)
@@ -103,10 +113,10 @@
 * Game Over 처리
 * UI 연동 (Gold / Life / Wave)
 
-### 13. UI System
+### 14. UI System
 
-* `TextMeshPro` 기반 UI
-* Wave 버튼 인터랙션
+* `TextMeshPro` UI
+* Wave 버튼 시스템
 * `UIButtonPulse` 애니메이션 효과
 * Game Over UI
 
@@ -120,7 +130,7 @@
 * MonoBehaviour lifecycle (`Awake`, `Start`, `Update`)
 * Transform & Waypoint 시스템
 * Vector 이동 (`MoveTowards`, `Lerp`)
-* Coroutine (공격, 웨이브, 리스폰)
+* Coroutine (공격 / 웨이브 / 리스폰)
 * Projectile & Splash Damage 시스템
 * Physics2D (`OverlapCircle`)
 * Wave 시스템 (게임 루프 핵심)
@@ -128,5 +138,6 @@
 * Singleton 패턴 (`GameManager`, Controller)
 * 간단한 AI 구조 (Find → Move → Attack)
 * Object 간 상호작용 (Enemy ↔ Soldier ↔ Tower)
+* 전투 시스템 설계 (Blocking, 1:1 Combat)
 * UI 시스템 (`TextMeshPro`, Button, Animation)
 * Game State 관리 (Game Over)
