@@ -8,15 +8,19 @@ public class EnemySpawner : MonoBehaviour
 
     private void Start()
     {
-        // 웨이브 시스템을 쓸 거면 여기서 자동 생성하지 않음
-        // SpawnEnemy();
+        // WaveManager가 생성 담당
     }
 
     public Enemy SpawnEnemy()
     {
-        if (enemyPrefab == null)
+        return SpawnEnemy(enemyPrefab);
+    }
+
+    public Enemy SpawnEnemy(Enemy prefab)
+    {
+        if (prefab == null)
         {
-            Debug.LogError("Enemy Prefab이 연결되지 않았습니다.");
+            Debug.LogError("Spawn할 Enemy Prefab이 연결되지 않았습니다.");
             return null;
         }
 
@@ -26,7 +30,7 @@ public class EnemySpawner : MonoBehaviour
             return null;
         }
 
-        Enemy newEnemy = Instantiate(enemyPrefab, transform.position, Quaternion.identity);
+        Enemy newEnemy = Instantiate(prefab, transform.position, Quaternion.identity);
         newEnemy.Setup(path);
         return newEnemy;
     }
